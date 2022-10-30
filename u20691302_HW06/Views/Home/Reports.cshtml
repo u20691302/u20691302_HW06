@@ -1,0 +1,37 @@
+﻿
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+@{
+    ViewBag.Title = "Report";
+}
+<h2>Report</h2>
+<canvas id="BarChart"></canvas>
+
+<script>
+    //Setting bar chart
+    var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var yValues = [163, 152, 200, 211, 139, 127, 122, 148, 160, 125, 118, 90];
+    var dataColors = [];
+    for (var index in xValues) {
+
+        var colorR = Math.floor((Math.random() * 256));
+        var colorG = Math.floor((Math.random() * 256));
+        var colorB = Math.floor((Math.random() * 256));
+        dataColors.push("rgb(" + colorR + "," + colorG + "," + colorB + ")");
+    }
+
+    var BarChart = document.getElementById("BarChart")
+    var HOFChart = new Chart(BarChart, {
+        type: 'bar',
+        data: {
+            datasets: [
+                {
+                    label: 'Number of Mountain Bikes Sold',
+                    data: yValues,
+                    backgroundColor: dataColors
+                }
+            ],
+            labels: xValues
+        },
+    });
+</script>
+

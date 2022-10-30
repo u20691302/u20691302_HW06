@@ -1,0 +1,191 @@
+﻿@model PagedList.IPagedList<u20691302_HW06.Models.product>
+@using PagedList.Mvc;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Products";
+}
+
+<h2>Products</h2>
+<hr />
+
+@using (Html.BeginForm("Index", "products", FormMethod.Get))
+{
+    <table>
+        <tr>
+            <td style="padding-right: 10px; padding-bottom: 10px;">
+                <input type="text" class="form-control" name="productName" placeholder="Enter product name" value="">
+            </td>
+            <td style="padding-right: 10px; padding-bottom: 10px;">
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </td>
+            <td style="padding-right: 10px; padding-bottom: 10px;">
+                <button class="btn btn-info" onclick="Create()">Create</button>
+            </td>
+        </tr>
+    </table>
+}
+
+<table class="table table-striped">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.First().product_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().model_year)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().list_price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().brand.brand_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().category.category_name)
+        </th>
+        <th></th>
+    </tr>
+    <tbody id="tableBody">
+        @foreach (var item in Model)
+        {
+            <tr id="@item.product_id">
+                <td>
+                    @Html.DisplayFor(modelItem => item.product_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.model_year)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.list_price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.brand.brand_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.category.category_name)
+                </td>
+                <td>
+                    <button class="btn btn-primary" onclick="Edit(@item.product_id)">Edit</button> |
+                    <button class="btn btn-info" onclick="Details(@item.product_id);">Details</button> |
+                    <button class="btn btn-danger" onclick="Delete(@item.product_id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<table width="100%" align="center">
+    <tr>
+        <td>
+            <p style="float: left">
+                @Html.PagedListPager(Model, page => Url.Action("Index", "products", new { page, currentFilterTextbox = ViewBag.CurrentFilterTextbox }))
+            </p>
+        </td>
+        <td>
+            <p style="float: right">
+                <strong>
+                    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                </strong>
+                &nbsp
+            </p>
+        </td>
+    </tr>
+</table>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalContent">
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function Details(ID) {
+            var Id = ID
+            console.log(ID);
+            $.ajax({
+                url: '@Url.Action("Details", "products")',
+                type: 'GET',
+                cache: false,
+                async: true,
+                data: { id: Id },
+                success: function (result) {
+
+                    $('#modalContent').html(result);
+                    $('#exampleModal').modal('show');
+                }
+            });
+        };
+
+        function Delete(ID) {
+            var Id = ID
+            $.ajax({
+                url: '@Url.Action("Delete", "products")',
+                type: 'GET',
+                cache: false,
+                async: true,
+                data: { id: Id },
+                success: function(result){
+                    $('#modalContent').html(result);
+                    $('#exampleModal').modal('show');
+                }
+            });
+        };
+
+        function DeleteConfirmed(ID) {
+            var Id = ID
+            console.log(ID);
+            $.ajax({
+                url: '@Url.Action("DeleteConfirmed", "products")',
+                type: 'POST',
+                cache: false,
+                async: true,
+                data: { id: Id },
+                success: function (result) {
+                    $('#'+ Id).remove();
+                    $('#exampleModal').modal('hide');
+                }
+            });
+        };
+
+        function Create() {
+        $.ajax({
+            url: '@Url.Action("Create", "products")',
+            type: 'GET',
+            cache: false,
+            async: true,
+            data: { id:'' },
+            success: function(result){
+                $('#modalContent').html(result);
+                $('#exampleModal').modal('show');
+            }
+        });
+    };
+
+        function Edit(ID) {
+            var Id = ID
+            console.log(ID);
+            $.ajax({
+                url: '@Url.Action("Edit", "products")',
+                type: 'GET',
+                cache: false,
+                async: true,
+                data: { id: Id },
+                success: function (result) {
+
+                    $('#modalContent').html(result);
+                    $('#exampleModal').modal('show');
+                }
+            });
+        };
+    </script>
+}

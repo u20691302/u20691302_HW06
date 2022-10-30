@@ -1,0 +1,105 @@
+﻿@model PagedList.IPagedList<u20691302_HW06.Models.order_items>
+@using PagedList.Mvc;
+@using PagedList;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Orders";
+}
+
+<h2>Orders</h2>
+@using (Html.BeginForm("Index", "order_items", FormMethod.Get))
+{
+    <table>
+        <tr>
+            <td style="padding-right: 10px; padding-bottom: 10px;">
+                <input type="datetime" class="form-control" name="orderDate" placeholder="yyyy/mm/dd" value="" required pattern="\{4}-\d{2}-\{d}">
+            </td>
+            <td style="padding-right: 10px; padding-bottom: 10px;">
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </td>
+        </tr>
+    </table>
+}
+@{ 
+    var data = Model.Select(p => new { p.order, p.product, p.order.order_date, p.quantity}).GroupBy(p => p.order.order_id);
+    var order = data.Select(x => new { order_id = x.Key, order_date = x.Key, product = x, });
+}
+@foreach (var item in order)
+{
+    <h3>Order @item.order_id - @item.order_date </h3>
+    <table class="table">
+        <tr>
+            <th>
+                Product Name
+            </th>
+            <th>
+                List Price
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Total
+            </th>
+        </tr>
+        @{
+            decimal total = 0;
+            decimal grandTotal = 0;
+        }
+        @foreach (var i in item.product)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => i.product.product_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => i.product.list_price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => i.quantity)
+                </td>
+                <td>
+                    @{
+                        total = i.quantity * i.product.list_price;
+                        grandTotal = grandTotal + total;
+                    }
+                    @total
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+
+            </td>
+            <td>
+
+            </td>
+            <td>
+                <p><b>Grand Total:</b></p>
+            </td>
+            <td>
+                <p><b>@grandTotal</b></p>
+            </td>
+        </tr>
+    </table>
+}
+
+<table width="100%" align="center">
+    <tr>
+        <td>
+            <p style="float: left">
+                @Html.PagedListPager(Model, page => Url.Action("Index", "order_items", new { page, currentFilterTextbox = ViewBag.currentfilterTextbox }))
+            </p>
+        </td>
+        <td>
+            <p style="float: right">
+                <strong>
+                    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                </strong>
+                &nbsp
+            </p>
+        </td>
+    </tr>
+</table>
+
